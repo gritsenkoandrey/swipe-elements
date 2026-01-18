@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 379b5252671a44fa844b8647e387ccdd, type: 3}
+  m_Name: AirBallonConfig
+  m_EditorClassIdentifier: 
+  <AirBallons>k__BackingField:
+  - {fileID: 6244946428813279880, guid: 8b6347e62a196f2419c7eec1cd5e0d48, type: 3}
+  - {fileID: 1239950434466737210, guid: 33d8ff009fbb84f4e9cf8e7e7c093566, type: 3}
+  <MinMaxCount>k__BackingField:
+    Min: 1
+    Max: 3
+  <MinMaxSpeed>k__BackingField:
+    Min: 0.5
+    Max: 2
+  <MinMaxAmplitude>k__BackingField:
+    Min: 1.5
+    Max: 3
+  <MinMaxFrequency>k__BackingField:
+    Min: 2
+    Max: 4
