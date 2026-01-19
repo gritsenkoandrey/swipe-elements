@@ -16,10 +16,7 @@ namespace SwipeElements.Game.ECS.Systems
 
         public void OnAwake()
         {
-            _filter = World.Filter
-                .With<DelayComponent>()
-                .Build();
-            
+            _filter = World.Filter.With<DelayComponent>().Build();
             _delayStash = World.GetStash<DelayComponent>();
         }
         

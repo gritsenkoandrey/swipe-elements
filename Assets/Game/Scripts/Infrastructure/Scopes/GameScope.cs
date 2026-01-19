@@ -1,5 +1,3 @@
-using System;
-using SwipeElements.Infrastructure.Factories.SystemFactory;
 using SwipeElements.Infrastructure.Scopes.EntryPoints;
 using VContainer;
 using VContainer.Unity;
@@ -12,8 +10,6 @@ namespace SwipeElements.Infrastructure.Scopes
         {
             base.Configure(builder);
             
-            builder.Register<ISystemFactory, SystemFactory>(Lifetime.Scoped).As<IDisposable>();
-
             builder.RegisterEntryPoint<GameEntryPoint>(Lifetime.Scoped).AsSelf().Build();
         }
     }

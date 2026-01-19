@@ -2,6 +2,8 @@
 {
     public interface ISystemFactory
     {
+        void Init();
         void CreateGameSystems();
+        void Cleanup();
     }
 }

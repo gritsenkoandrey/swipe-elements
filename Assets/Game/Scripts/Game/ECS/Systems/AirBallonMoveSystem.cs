@@ -16,10 +16,12 @@ namespace SwipeElements.Game.ECS.Systems
         private Filter _airBallonFilter;
         private Stash<SpeedComponent> _speedStash;
         private Stash<TransformComponent> _transformStash;
-        private Stash<SinusoidalMovementComponent> _sinusoidalMovementStash;
+        private Stash<SineMovementComponent> _sineMovementStash;
         
         private float _rightX;
         private float _leftX;
+        
+        private const float OFFSET = 1f;
         
         public AirBallonMoveSystem(ICameraService cameraService)
         {
@@ -33,13 +35,13 @@ namespace SwipeElements.Game.ECS.Systems
             _airBallonFilter = World.Filter
                 .With<AirBallonTag>()
                 .With<SpeedComponent>()
-                .With<SinusoidalMovementComponent>()
+                .With<SineMovementComponent>()
                 .With<TransformComponent>()
                 .Build();
             
             _speedStash = World.GetStash<SpeedComponent>();
             _transformStash = World.GetStash<TransformComponent>();
-            _sinusoidalMovementStash = World.GetStash<SinusoidalMovementComponent>();
+            _sineMovementStash = World.GetStash<SineMovementComponent>();
             
             CalculateScreenBounds();
         }
@@ -50,13 +52,13 @@ namespace SwipeElements.Game.ECS.Systems
             {
                 ref SpeedComponent speedComponent = ref _speedStash.Get(entity);
                 ref TransformComponent transformComponent = ref _transformStash.Get(entity);
-                ref SinusoidalMovementComponent sinusoidalComponent = ref _sinusoidalMovementStash.Get(entity);
+                ref SineMovementComponent sineComponent = ref _sineMovementStash.Get(entity);
                 
                 Vector3 position = transformComponent.transform.position;
                 
                 float direction = (entity.Id % 2 == 0) ? 1f : -1f;
                 position.x += direction * speedComponent.speed * deltaTime;
-                position.y += Mathf.Cos(Time.time * sinusoidalComponent.frequency + entity.Id) * sinusoidalComponent.amplitude * deltaTime;
+                position.y += Mathf.Cos(Time.time * sineComponent.frequency + entity.Id) * sineComponent.amplitude * deltaTime;
                 
                 if (position.x > _rightX)
                 {
@@ -81,8 +83,8 @@ namespace SwipeElements.Game.ECS.Systems
             float screenHeight = 2f * camera.orthographicSize;
             float screenWidth = screenHeight * camera.aspect;
             
-            _rightX = camera.transform.position.x + screenWidth / 2f + 1f;
-            _leftX = camera.transform.position.x - screenWidth / 2f - 1f;
+            _rightX = camera.transform.position.x + screenWidth / 2f + OFFSET;
+            _leftX = camera.transform.position.x - screenWidth / 2f - OFFSET;
         }
     }
 }

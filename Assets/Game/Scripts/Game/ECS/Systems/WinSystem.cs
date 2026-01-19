@@ -12,8 +12,8 @@ namespace SwipeElements.Game.ECS.Systems
     {
         private readonly IResultGameService _resultGameService;
         
-        private Filter _filter;
-        private Stash<ElementComponent> _elementStash;
+        private Filter _winFilter;
+        private Filter _elementFilter;
         private Stash<WinComponent> _winStash;
         
         public WinSystem(IResultGameService resultGameService)
@@ -25,26 +25,26 @@ namespace SwipeElements.Game.ECS.Systems
         
         public void OnAwake()
         {
-            _filter = World.Filter
-                .With<WinComponent>()
-                .Build();
-            
-            _elementStash = World.GetStash<ElementComponent>();
+            _winFilter = World.Filter.With<WinComponent>().Build();
+            _elementFilter = World.Filter.With<ElementComponent>().Build();
             _winStash = World.GetStash<WinComponent>();
         }
         
         public void OnUpdate(float deltaTime)
         {
-            foreach (Entity entity in _filter)
+            if (_winFilter.IsEmpty())
+            {
+                return;
+            }
+            
+            foreach (Entity entity in _winFilter)
             {
                 _winStash.Remove(entity);
-                
-                if (_elementStash.IsEmpty())
-                {
-                    _resultGameService.SendResultGame(true);
-                    
-                    return;
-                }
+            }
+
+            if (_elementFilter.IsEmpty())
+            {
+                _resultGameService.SendResultGame(true);
             }
         }
         

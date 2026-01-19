@@ -9,7 +9,7 @@ namespace SwipeElements.Game.ECS.Systems
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
-    public sealed class ElementInitializeSystem : ISystem
+    public sealed class ElementInitializeSystem : IInitializer
     {
         private readonly ElementConfig _config;
         
@@ -29,17 +29,12 @@ namespace SwipeElements.Game.ECS.Systems
         {
             _elementFilter = World.Filter
                 .With<ElementComponent>()
-                .With<TransformComponent>()
-                .Without<IdComponent>()
                 .Build();
             
             _idStash = World.GetStash<IdComponent>();
             _elementStash = World.GetStash<ElementComponent>();
             _cleanupStash = World.GetStash<CleanupComponent>();
-        }
-        
-        public void OnUpdate(float deltaTime)
-        {
+            
             foreach (Entity entity in _elementFilter)
             {
                 ref ElementComponent element = ref _elementStash.Get(entity);

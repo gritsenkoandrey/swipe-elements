@@ -1,13 +1,18 @@
+using SwipeElements.Game.Views;
+using SwipeElements.Infrastructure.Factories.SystemFactory;
+using SwipeElements.Infrastructure.Serialize;
+using SwipeElements.Infrastructure.Services.ExitApplicationService;
 using SwipeElements.Infrastructure.Services.LoadingScreenService;
 using SwipeElements.Infrastructure.Services.ProgressService;
 using SwipeElements.Infrastructure.Services.ResultGameService;
 using SwipeElements.UI;
 using SwipeElements.UI.Screens;
+using UnityEngine;
 using VContainer;
 
 namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
 {
-    public sealed class GameState : IEnterState
+    public sealed class GameState : IEnterState<LevelView>
     {
         private readonly IGameStateMachine _gameStateMachine;
         
@@ -15,8 +20,11 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
         private IScreenService _screenService;
         private IProgressService _progressService;
         private IResultGameService _resultGameService;
+        private IExitApplicationService _exitApplicationService;
+        private ISystemFactory _systemFactory;
         
         private GameScreen _gameScreen;
+        private LevelView _levelView;
 
         public GameState(IGameStateMachine gameStateMachine)
         {
@@ -29,18 +37,25 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
             ILoadingScreenService loadingScreenService,
             IScreenService screenService,
             IProgressService progressService,
-            IResultGameService resultGameService
+            IResultGameService resultGameService,
+            IExitApplicationService exitApplicationService,
+            ISystemFactory systemFactory
         )
         {
             _loadingScreenService = loadingScreenService;
             _screenService = screenService;
             _progressService = progressService;
             _resultGameService = resultGameService;
+            _exitApplicationService = exitApplicationService;
+            _systemFactory = systemFactory;
         }
 
-        void IEnterState.Enter()
+        void IEnterState<LevelView>.Enter(LevelView param)
         {
+            _levelView = param;
             _loadingScreenService.Hide();
+            _exitApplicationService.OnExitGame += OnExitGame;
+            _resultGameService.OnResultGame += OnResultGame;
             
             ShowGameScreen();
         }
@@ -53,6 +68,10 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
             _gameScreen.OnNextButtonClick -= OnNextButtonClick;
             _gameScreen.OnRestartButtonClick -= OnRestartButtonClick;
             _resultGameService.OnResultGame -= OnResultGame;
+            _exitApplicationService.OnExitGame -= OnExitGame;
+            _levelView = null;
+            _gameScreen = null;
+            _systemFactory.Cleanup();
         }
 
         private void ShowGameScreen()
@@ -63,8 +82,6 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
                 _gameScreen.OnNextButtonClick += OnNextButtonClick;
                 _gameScreen.OnRestartButtonClick += OnRestartButtonClick;
             }
-            
-            _resultGameService.OnResultGame += OnResultGame;
         }
 
         private void OnNextButtonClick()
@@ -80,6 +97,13 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
         private void OnResultGame(bool isWin)
         {
             _gameStateMachine.Enter<ResultState, bool>(isWin);
+        }
+
+        private void OnExitGame()
+        {
+            _progressService.LevelJson.Value = _levelView.Serialize();
+            
+            Debug.Log("Save Game");
         }
     }
 }

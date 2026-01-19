@@ -8,6 +8,7 @@ using SwipeElements.Infrastructure.Services.StaticDataService;
 using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace SwipeElements.Game.ECS.Systems
 {
@@ -31,6 +32,7 @@ namespace SwipeElements.Game.ECS.Systems
         private Stash<DestroyComponent> _destroyStash;
         private Stash<DelayComponent> _delayStash;
         private Stash<GridComponent> _gridStash;
+        private Stash<NormalizeComponent> _normalizeStash;
         
         private readonly Dictionary<Vector2Int, Entity> _grid = new ();
         private readonly HashSet<Entity> _candidates = new ();
@@ -75,6 +77,7 @@ namespace SwipeElements.Game.ECS.Systems
             _destroyStash = World.GetStash<DestroyComponent>();
             _delayStash = World.GetStash<DelayComponent>();
             _gridStash = World.GetStash<GridComponent>();
+            _normalizeStash = World.GetStash<NormalizeComponent>();
         }
         
         public void OnUpdate(float deltaTime)
@@ -97,7 +100,7 @@ namespace SwipeElements.Game.ECS.Systems
             GenerateMap();
             HorizontalScan(size);
             VerticalScan(size);
-            DestroyElements();
+            DestroyElements(size);
         }
         
         public void Dispose()
@@ -220,8 +223,10 @@ namespace SwipeElements.Game.ECS.Systems
             return grid.view;
         }
         
-        private void DestroyElements()
+        private void DestroyElements(Vector2Int size)
         {
+            HashSet<int> columns = HashSetPool<int>.Get();
+            
             foreach (Entity entity in _candidates)
             {
                 ref TransformComponent transform = ref _transformStash.Get(entity);
@@ -231,6 +236,30 @@ namespace SwipeElements.Game.ECS.Systems
                 _delayStash.AddOrGet(entity).value = _config.DestroyAnimationTime;
                 
                 element.view.StartDestroyAnimation(_config.DestroyAnimationTime);
+                
+                columns.Add(element.view.Position.x);
+            }
+            
+            SetNormalize(columns, size);
+            
+            HashSetPool<int>.Release(columns);
+        }
+        
+        private void SetNormalize(HashSet<int> columns, Vector2Int size)
+        {
+            foreach (int x in columns)
+            {
+                for (int y = 0; y < size.y; y++)
+                {
+                    Entity entity = GetEntityAt(x, y);
+        
+                    if (entity == default || _destroyStash.Has(entity))
+                    {
+                        continue;
+                    }
+        
+                    _normalizeStash.AddOrGet(entity);
+                }
             }
         }
     }

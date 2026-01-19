@@ -1,8 +1,5 @@
-using System;
 using JetBrains.Annotations;
 using Scellecs.Morpeh;
-using Scellecs.Morpeh.Helpers;
-using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Systems;
 using SwipeElements.Infrastructure.Services.CameraService;
 using SwipeElements.Infrastructure.Services.PhysicsService;
@@ -12,7 +9,7 @@ using SwipeElements.Infrastructure.Services.StaticDataService;
 namespace SwipeElements.Infrastructure.Factories.SystemFactory
 {
     [UsedImplicitly]
-    public sealed class SystemFactory : ISystemFactory, IDisposable
+    public sealed class SystemFactory : ISystemFactory
     {
         private World _world;
         private SystemsGroup _systemsGroup;
@@ -36,17 +33,21 @@ namespace SwipeElements.Infrastructure.Factories.SystemFactory
             _resultGameService = resultGameService;
         }
 
-        void ISystemFactory.CreateGameSystems()
+        void ISystemFactory.Init()
         {
             _world = World.Default;
+        }
+
+        void ISystemFactory.CreateGameSystems()
+        {
             _systemsGroup = _world.CreateSystemsGroup();
 
             _systemsGroup.AddInitializer(new GridInitializeSystem());
+            _systemsGroup.AddInitializer(new ElementInitializeSystem(_staticDataService));
             
-            _systemsGroup.AddSystem(new ElementInitializeSystem(_staticDataService));
+            _systemsGroup.AddSystem(new DelaySystem());
             _systemsGroup.AddSystem(new InputSystem(_physicsService, _cameraService));
             _systemsGroup.AddSystem(new SwipeElementSystem(_staticDataService));
-            _systemsGroup.AddSystem(new DelaySystem());
             _systemsGroup.AddSystem(new MoveElementSystem());
             _systemsGroup.AddSystem(new NormalizeElementSystem(_staticDataService));
             _systemsGroup.AddSystem(new MergeElementSystem(_staticDataService));
@@ -55,18 +56,16 @@ namespace SwipeElements.Infrastructure.Factories.SystemFactory
             _systemsGroup.AddSystem(new WinSystem(_resultGameService));
             
             _systemsGroup.AddSystem(new DestroyElementSystem());
-            
+            _systemsGroup.AddSystem(new CleanupSystem());
+
             _world.AddSystemsGroup(order: 0, _systemsGroup);
-            _world.Commit();
         }
         
-        void IDisposable.Dispose()
+        void ISystemFactory.Cleanup()
         {
             if (_systemsGroup != null)
             {
-                _world.Filter.With<CleanupComponent>().Build().RemoveAllEntities();
                 _world.RemoveSystemsGroup(_systemsGroup);
-                _systemsGroup.Dispose();
                 _systemsGroup = null;
             }
         }

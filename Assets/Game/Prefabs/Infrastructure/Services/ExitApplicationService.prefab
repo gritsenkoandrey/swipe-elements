@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8133398423114353608}
   - component: {fileID: 3904538680213354228}
   m_Layer: 0
-  m_Name: AutoSaveService
+  m_Name: ExitApplicationService
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

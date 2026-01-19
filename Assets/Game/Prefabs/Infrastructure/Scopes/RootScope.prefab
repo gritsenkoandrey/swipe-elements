@@ -52,4 +52,4 @@ MonoBehaviour:
   _coroutineService: {fileID: 6037930597340415590, guid: 6cbab8ce48b52da47933ceaf2acdccd6, type: 3}
   _cameraService: {fileID: 8965182975762601324, guid: 5714b25bce810c54d975b0ae38130ec1, type: 3}
   _screenService: {fileID: 109012577863120137, guid: 10f3c08f5b4606a4caa36bd6154e9ca3, type: 3}
-  _autoSaveService: {fileID: 3904538680213354228, guid: 489b10701cbdda64b81d60bc78d710ba, type: 3}
+  _exitApplicationService: {fileID: 3904538680213354228, guid: 489b10701cbdda64b81d60bc78d710ba, type: 3}

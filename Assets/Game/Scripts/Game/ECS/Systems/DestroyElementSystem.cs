@@ -13,7 +13,6 @@ namespace SwipeElements.Game.ECS.Systems
         private Filter _destroyFilter;
         private Filter _gridFilter;
         private Stash<DestroyComponent> _destroyStash;
-        private Stash<NormalizeComponent> _normalizeStash;
         private Stash<WinComponent> _winStash;
         
         public World World { get; set; }
@@ -31,7 +30,6 @@ namespace SwipeElements.Game.ECS.Systems
                 .Build();
             
             _destroyStash = World.GetStash<DestroyComponent>();
-            _normalizeStash = World.GetStash<NormalizeComponent>();
             _winStash = World.GetStash<WinComponent>();
         }
         
@@ -46,14 +44,13 @@ namespace SwipeElements.Game.ECS.Systems
             {
                 ref DestroyComponent destroy = ref _destroyStash.Get(entity);
                 destroy.Dispose();
-                
                 World.RemoveEntity(entity);
             }
-            
-            Entity gridEntity = _gridFilter.First();
 
-            _normalizeStash.AddOrGet(gridEntity);
-            _winStash.AddOrGet(gridEntity);
+            foreach (Entity entity in _gridFilter)
+            {
+                _winStash.AddOrGet(entity);
+            }
         }
         
         public void Dispose()

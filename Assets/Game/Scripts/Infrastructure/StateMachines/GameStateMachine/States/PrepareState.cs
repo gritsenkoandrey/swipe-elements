@@ -1,4 +1,5 @@
 using SwipeElements.Infrastructure.Factories.ElementFactory;
+using SwipeElements.Infrastructure.Factories.SystemFactory;
 using SwipeElements.Infrastructure.Services.ApplicationService;
 using SwipeElements.Infrastructure.Services.ProgressService;
 using SwipeElements.Infrastructure.Services.StaticDataService;
@@ -14,6 +15,7 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
         private IElementFactory _elementFactory;
         private IProgressService _progressService;
         private IApplicationService _applicationService;
+        private ISystemFactory _systemFactory;
 
         public PrepareState(IGameStateMachine gameStateMachine)
         {
@@ -26,20 +28,23 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
             IStaticDataService staticDataService,
             IElementFactory elementFactory,
             IProgressService progressService,
-            IApplicationService applicationService
+            IApplicationService applicationService,
+            ISystemFactory systemFactory
         )
         {
             _staticDataService = staticDataService;
             _elementFactory = elementFactory;
             _progressService = progressService;
             _applicationService = applicationService;
+            _systemFactory = systemFactory;
         }
 
         void IEnterState.Enter()
         {
             _staticDataService.Init();
-            _elementFactory.Init();
             _progressService.Init();
+            _elementFactory.Init();
+            _systemFactory.Init();
             _applicationService.Init();
             
             _gameStateMachine.Enter<LoadLevelState, string>(SceneName.GAME);

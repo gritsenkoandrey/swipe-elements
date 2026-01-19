@@ -20,9 +20,9 @@ namespace SwipeElements.Game.ECS.Systems
         
         private Filter _elementFilter;
         private Filter _gridFilter;
-        private Filter _actualizeFilter;
+        private Filter _normalizeFilter;
         private Filter _moveFilter;
-        
+        private Filter _destroyFilter;
         private Stash<ElementComponent> _elementStash;
         private Stash<MoveComponent> _moveStash;
         private Stash<SpeedComponent> _speedStash;
@@ -40,20 +40,11 @@ namespace SwipeElements.Game.ECS.Systems
         
         public void OnAwake()
         {
-            _elementFilter = World.Filter
-                .With<ElementComponent>()
-                .Build();
-
-            _gridFilter = World.Filter
-                .With<GridComponent>()
-                .Build();
-            
-            _actualizeFilter = World.Filter
-                .With<NormalizeComponent>()
-                .Build();
-            
+            _elementFilter = World.Filter.With<ElementComponent>().Build();
+            _gridFilter = World.Filter.With<GridComponent>().Build();
+            _normalizeFilter = World.Filter.With<NormalizeComponent>().Build();
+            _destroyFilter = World.Filter.With<DestroyComponent>().Build();
             _moveFilter = World.Filter.With<MoveComponent>().Build();
-            
             _normalizeStash = World.GetStash<NormalizeComponent>();
             _elementStash = World.GetStash<ElementComponent>();
             _moveStash = World.GetStash<MoveComponent>();
@@ -63,12 +54,12 @@ namespace SwipeElements.Game.ECS.Systems
         
         public void OnUpdate(float deltaTime)
         {
-            if (_actualizeFilter.IsEmpty() || _moveFilter.IsNotEmpty())
+            if (_normalizeFilter.IsEmpty() || _moveFilter.IsNotEmpty() || _destroyFilter.IsNotEmpty())
             {
                 return;
             }
 
-            foreach (Entity entity in _actualizeFilter)
+            foreach (Entity entity in _normalizeFilter)
             {
                 _normalizeStash.Remove(entity);
             }
@@ -144,7 +135,12 @@ namespace SwipeElements.Game.ECS.Systems
             public int CompareTo(SortableEntity other)
             {
                 int deltaX = x - other.x;
-                if (deltaX != 0) return deltaX;
+                
+                if (deltaX != 0)
+                {
+                    return deltaX;
+                }
+                
                 return y - other.y;
             }
         }

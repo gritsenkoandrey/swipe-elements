@@ -1,11 +1,12 @@
 ﻿using SwipeElements.Infrastructure.Factories.AirBallonFactory;
 using SwipeElements.Infrastructure.Factories.ElementFactory;
 using SwipeElements.Infrastructure.Factories.LevelFactory;
+using SwipeElements.Infrastructure.Factories.SystemFactory;
 using SwipeElements.Infrastructure.Services.ApplicationService;
 using SwipeElements.Infrastructure.Services.AssetService;
-using SwipeElements.Infrastructure.Services.AutoSaveService;
 using SwipeElements.Infrastructure.Services.CameraService;
 using SwipeElements.Infrastructure.Services.CoroutineService;
+using SwipeElements.Infrastructure.Services.ExitApplicationService;
 using SwipeElements.Infrastructure.Services.LoadingScreenService;
 using SwipeElements.Infrastructure.Services.PhysicsService;
 using SwipeElements.Infrastructure.Services.ProgressService;
@@ -26,7 +27,7 @@ namespace SwipeElements.Infrastructure.Scopes
         [SerializeField] private CoroutineService _coroutineService;
         [SerializeField] private CameraService _cameraService;
         [SerializeField] private ScreenService _screenService;
-        [SerializeField] private AutoSaveService _autoSaveService;
+        [SerializeField] private ExitApplicationService _exitApplicationService;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -53,13 +54,14 @@ namespace SwipeElements.Infrastructure.Scopes
                 .As<IScreenService>();
             
             builder
-                .RegisterComponentInNewPrefab(_autoSaveService, Lifetime.Singleton)
+                .RegisterComponentInNewPrefab(_exitApplicationService, Lifetime.Singleton)
                 .UnderTransform(transform)
-                .As<IAutoSaveService>();
+                .As<IExitApplicationService>();
 
             builder.Register<ILevelFactory, LevelFactory>(Lifetime.Singleton);
             builder.Register<IAirBallonFactory, AirBallonFactory>(Lifetime.Singleton);
             builder.Register<IElementFactory, ElementFactory>(Lifetime.Singleton);
+            builder.Register<ISystemFactory, SystemFactory>(Lifetime.Singleton);
             builder.Register<ISceneLoadService, SceneLoadService>(Lifetime.Singleton);
             builder.Register<IAssetService, AssetService>(Lifetime.Singleton);
             builder.Register<IProgressService, ProgressService>(Lifetime.Singleton);
@@ -68,8 +70,6 @@ namespace SwipeElements.Infrastructure.Scopes
             builder.Register<IResultGameService, ResultGameService>(Lifetime.Singleton);
             builder.Register<IStateMachineFactory, StateMachineFactory>(Lifetime.Singleton);
             builder.Register<IApplicationService, ApplicationService>(Lifetime.Singleton);
-            
-            builder.RegisterBuildCallback(resolver => resolver.Resolve<IAutoSaveService>());
         }
     }
 }
