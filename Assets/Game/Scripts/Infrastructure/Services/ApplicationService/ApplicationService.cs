@@ -6,9 +6,6 @@ namespace SwipeElements.Infrastructure.Services.ApplicationService
     [UsedImplicitly]
     public sealed class ApplicationService : IApplicationService
     {
-        void IApplicationService.Init()
-        {
-            Application.targetFrameRate = 60;
-        }
+        void IApplicationService.Init() => Application.targetFrameRate = 60;
     }
 }

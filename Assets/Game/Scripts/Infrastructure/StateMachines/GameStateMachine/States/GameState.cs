@@ -65,8 +65,13 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
             _screenService.TryHide<GameScreen>();
             
             _progressService.LevelJson.Value = string.Empty;
-            _gameScreen.OnNextButtonClick -= OnNextButtonClick;
-            _gameScreen.OnRestartButtonClick -= OnRestartButtonClick;
+
+            if (_gameScreen)
+            {
+                _gameScreen.OnNextButtonClick -= OnNextButtonClick;
+                _gameScreen.OnRestartButtonClick -= OnRestartButtonClick;
+            }
+            
             _resultGameService.OnResultGame -= OnResultGame;
             _exitApplicationService.OnExitGame -= OnExitGame;
             _levelView = null;

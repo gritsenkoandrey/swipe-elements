@@ -10,5 +10,6 @@ namespace SwipeElements.Infrastructure.Services.StaticDataService
         AirBalloonConfig GetAirBallonConfig();
         ElementConfig GetElementConfig();
         GridConfig GetGridConfig();
+        InputConfig GetInputConfig();
     }
 }

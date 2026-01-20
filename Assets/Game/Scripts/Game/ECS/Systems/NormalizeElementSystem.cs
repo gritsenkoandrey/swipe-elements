@@ -3,11 +3,12 @@ using Scellecs.Morpeh;
 using Scellecs.Morpeh.Collections;
 using Scellecs.Morpeh.Helpers;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
+using SwipeElements.Game.Extensions;
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Services.StaticDataService;
 using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
 using Unity.IL2CPP.CompilerServices;
-using UnityEngine;
 
 namespace SwipeElements.Game.ECS.Systems
 {
@@ -16,39 +17,38 @@ namespace SwipeElements.Game.ECS.Systems
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public sealed class NormalizeElementSystem : ISystem
     {
-        private readonly ElementConfig _config;
-        
         private Filter _elementFilter;
         private Filter _gridFilter;
         private Filter _normalizeFilter;
         private Filter _moveFilter;
         private Filter _destroyFilter;
-        private Stash<ElementComponent> _elementStash;
+        private Stash<ElementTag> _elementStash;
         private Stash<MoveComponent> _moveStash;
         private Stash<SpeedComponent> _speedStash;
-        private Stash<GridComponent> _gridStash;
+        private Stash<GridTag> _gridStash;
         private Stash<NormalizeComponent> _normalizeStash;
         
+        private readonly float _gravitySpeed;
         private readonly FastList<SortableEntity> _sortBuffer = new ();
 
         public NormalizeElementSystem(IStaticDataService staticDataService)
         {
-            _config = staticDataService.GetElementConfig();
+            _gravitySpeed = staticDataService.GetElementConfig().GravitySpeed;
         }
         
         public World World { get; set; }
         
         public void OnAwake()
         {
-            _elementFilter = World.Filter.With<ElementComponent>().Build();
-            _gridFilter = World.Filter.With<GridComponent>().Build();
+            _elementFilter = World.Filter.With<ElementTag>().Build();
+            _gridFilter = World.Filter.With<GridTag>().Build();
             _normalizeFilter = World.Filter.With<NormalizeComponent>().Build();
             _destroyFilter = World.Filter.With<DestroyComponent>().Build();
             _moveFilter = World.Filter.With<MoveComponent>().Build();
             _normalizeStash = World.GetStash<NormalizeComponent>();
-            _elementStash = World.GetStash<ElementComponent>();
+            _elementStash = World.GetStash<ElementTag>();
             _moveStash = World.GetStash<MoveComponent>();
-            _gridStash = World.GetStash<GridComponent>();
+            _gridStash = World.GetStash<GridTag>();
             _speedStash = World.GetStash<SpeedComponent>();
         }
         
@@ -66,7 +66,7 @@ namespace SwipeElements.Game.ECS.Systems
 
             foreach (Entity entity in _elementFilter)
             {
-                ref ElementComponent element = ref _elementStash.Get(entity);
+                ref ElementTag element = ref _elementStash.Get(entity);
                 
                 _sortBuffer.Add(new () 
                 { 
@@ -84,7 +84,6 @@ namespace SwipeElements.Game.ECS.Systems
             _sortBuffer.Sort();
 
             GridView gridView = GetGridView();
-            Vector3 origin = gridView.GetOrigin();
             
             int currentX = int.MaxValue;
             int targetY = 0;
@@ -101,14 +100,14 @@ namespace SwipeElements.Game.ECS.Systems
                 
                 if (item.y != targetY)
                 {
-                    ref ElementComponent element = ref _elementStash.Get(entity);
+                    ref ElementTag element = ref _elementStash.Get(entity);
                     element.view.SetPosition(new (currentX, targetY));
                     
                     ref MoveComponent move = ref _moveStash.AddOrGet(entity);
-                    move.to = gridView.GetCenter(origin, currentX, targetY);
+                    move.to = gridView.GetCenter(currentX, targetY);
                     
                     ref SpeedComponent speed = ref _speedStash.AddOrGet(entity);
-                    speed.speed = _config.GravitySpeed;
+                    speed.speed = _gravitySpeed;
                 }
 
                 targetY++;
@@ -121,7 +120,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
             Entity entity = _gridFilter.First();
             
-            ref GridComponent grid = ref _gridStash.Get(entity);
+            ref GridTag grid = ref _gridStash.Get(entity);
             
             return grid.view;
         }

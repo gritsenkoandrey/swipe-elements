@@ -1,6 +1,7 @@
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Helpers;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using Unity.IL2CPP.CompilerServices;
 
 namespace SwipeElements.Game.ECS.Systems
@@ -20,13 +21,13 @@ namespace SwipeElements.Game.ECS.Systems
         public void OnAwake()
         {
             _destroyFilter = World.Filter
-                .With<ElementComponent>()
+                .With<ElementTag>()
                 .With<DestroyComponent>()
                 .Without<DelayComponent>()
                 .Build();
             
             _gridFilter = World.Filter
-                .With<GridComponent>()
+                .With<GridTag>()
                 .Build();
             
             _destroyStash = World.GetStash<DestroyComponent>();

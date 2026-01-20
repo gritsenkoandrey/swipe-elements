@@ -1,5 +1,6 @@
 ﻿using Scellecs.Morpeh;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Infrastructure.Services.CameraService;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;

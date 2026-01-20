@@ -7,5 +7,6 @@
         public const string AIR_BALLON_DATA_PATH = "StaticData/AirBallonConfig";
         public const string ELEMENT_DATA_PATH = "StaticData/ElementConfig";
         public const string GRID_DATA_PATH = "StaticData/GridConfig";
+        public const string INPUT_DATA_PATH = "StaticData/InputConfig";
     }
 }

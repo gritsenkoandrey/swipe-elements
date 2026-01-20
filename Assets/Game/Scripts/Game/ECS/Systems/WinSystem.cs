@@ -1,5 +1,6 @@
 ﻿using Scellecs.Morpeh;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Infrastructure.Services.ResultGameService;
 using Unity.IL2CPP.CompilerServices;
 
@@ -26,7 +27,7 @@ namespace SwipeElements.Game.ECS.Systems
         public void OnAwake()
         {
             _winFilter = World.Filter.With<WinComponent>().Build();
-            _elementFilter = World.Filter.With<ElementComponent>().Build();
+            _elementFilter = World.Filter.With<ElementTag>().Build();
             _winStash = World.GetStash<WinComponent>();
         }
         

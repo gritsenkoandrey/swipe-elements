@@ -1,9 +1,10 @@
 ﻿using Scellecs.Morpeh;
 using Scellecs.Morpeh.Helpers;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
+using SwipeElements.Game.Extensions;
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Services.StaticDataService;
-using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
@@ -14,21 +15,21 @@ namespace SwipeElements.Game.ECS.Systems
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public sealed class SwipeElementSystem : ISystem
     {
-        private readonly ElementConfig _config;
-        
         private Filter _swipeFilter;
         private Filter _elementFilter;
         private Filter _gridFilter;
         
         private Stash<SwipeComponent> _swipeStash;
-        private Stash<ElementComponent> _elementStash;
-        private Stash<GridComponent> _gridStash;
+        private Stash<ElementTag> _elementStash;
+        private Stash<GridTag> _gridStash;
         private Stash<MoveComponent> _moveStash;
         private Stash<SpeedComponent> _speedStash;
 
+        private readonly float _swipeSpeed;
+
         public SwipeElementSystem(IStaticDataService staticDataService)
         {
-            _config = staticDataService.GetElementConfig();
+            _swipeSpeed = staticDataService.GetElementConfig().SwipeSpeed;
         }
         
         public World World { get; set; }
@@ -37,21 +38,21 @@ namespace SwipeElements.Game.ECS.Systems
         {
             _swipeFilter = World.Filter
                 .With<SwipeComponent>()
-                .With<ElementComponent>()
+                .With<ElementTag>()
                 .Build();
             
             _elementFilter = World.Filter
-                .With<ElementComponent>()
+                .With<ElementTag>()
                 .Without<DestroyComponent>()
                 .Build();
             
             _gridFilter = World.Filter
-                .With<GridComponent>()
+                .With<GridTag>()
                 .Build();
             
             _swipeStash = World.GetStash<SwipeComponent>();
-            _elementStash = World.GetStash<ElementComponent>();
-            _gridStash = World.GetStash<GridComponent>();
+            _elementStash = World.GetStash<ElementTag>();
+            _gridStash = World.GetStash<GridTag>();
             _moveStash = World.GetStash<MoveComponent>();
             _speedStash = World.GetStash<SpeedComponent>();
         }
@@ -61,7 +62,7 @@ namespace SwipeElements.Game.ECS.Systems
             foreach (Entity entity in _swipeFilter)
             {
                 ref SwipeComponent swipe = ref _swipeStash.Get(entity);
-                ref ElementComponent element = ref _elementStash.Get(entity);
+                ref ElementTag element = ref _elementStash.Get(entity);
                 
                 Vector2Int axis = GetAxis(swipe.direction);
                 GridView grid = GetGridView();
@@ -69,27 +70,25 @@ namespace SwipeElements.Game.ECS.Systems
                 Vector2Int currentPosition = element.view.Position;
                 Vector2Int targetPosition = element.view.Position + axis;
                 
-                Vector3 origin = grid.GetOrigin();
-                
                 if (TryGetElementAt(targetPosition, out Entity neighborEntity))
                 {
-                    ref ElementComponent neighborElement = ref _elementStash.Get(neighborEntity);
+                    ref ElementTag neighborElement = ref _elementStash.Get(neighborEntity);
 
                     element.view.SetPosition(targetPosition);
                     neighborElement.view.SetPosition(currentPosition);
                     
-                    _moveStash.AddOrGet(entity).to = grid.GetCenter(origin, targetPosition.x, targetPosition.y);
-                    _moveStash.AddOrGet(neighborEntity).to = grid.GetCenter(origin, currentPosition.x, currentPosition.y);
-                    _speedStash.AddOrGet(entity).speed = _config.SwipeSpeed;
-                    _speedStash.AddOrGet(neighborEntity).speed = _config.SwipeSpeed;
+                    _moveStash.AddOrGet(entity).to = grid.GetCenter(targetPosition.x, targetPosition.y);
+                    _moveStash.AddOrGet(neighborEntity).to = grid.GetCenter(currentPosition.x, currentPosition.y);
+                    _speedStash.AddOrGet(entity).speed = _swipeSpeed;
+                    _speedStash.AddOrGet(neighborEntity).speed = _swipeSpeed;
                 }
                 else if (axis == Vector2Int.left && targetPosition.x >= 0 || 
                          axis == Vector2Int.right && targetPosition.x < grid.Size.x)
                 {
                     element.view.SetPosition(targetPosition);
                     
-                    _moveStash.AddOrGet(entity).to = grid.GetCenter(origin, targetPosition.x, targetPosition.y);
-                    _speedStash.AddOrGet(entity).speed = _config.SwipeSpeed;
+                    _moveStash.AddOrGet(entity).to = grid.GetCenter(targetPosition.x, targetPosition.y);
+                    _speedStash.AddOrGet(entity).speed = _swipeSpeed;
                 }
                 
                 _swipeStash.Remove(entity);
@@ -114,7 +113,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
             Entity entity = _gridFilter.First();
             
-            ref GridComponent grid = ref _gridStash.Get(entity);
+            ref GridTag grid = ref _gridStash.Get(entity);
             
             return grid.view;
         }
@@ -123,7 +122,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
             foreach (Entity entity in _elementFilter)
             {
-                ref ElementComponent element = ref _elementStash.Get(entity);
+                ref ElementTag element = ref _elementStash.Get(entity);
                 
                 if (element.view.Position == position)
                 {

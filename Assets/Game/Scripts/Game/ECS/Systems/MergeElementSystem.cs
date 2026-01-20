@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Helpers;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Services.StaticDataService;
 using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
@@ -17,8 +18,6 @@ namespace SwipeElements.Game.ECS.Systems
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public sealed class MergeElementSystem : ISystem
     {
-        private readonly ElementConfig _config;
-        
         private Filter _mergeFilter;
         private Filter _elementFilter;
         private Filter _gridFilter;
@@ -27,21 +26,23 @@ namespace SwipeElements.Game.ECS.Systems
         
         private Stash<MergeComponent> _mergeStash;
         private Stash<IdComponent> _idStash;
-        private Stash<ElementComponent> _elementStash;
+        private Stash<ElementTag> _elementStash;
         private Stash<TransformComponent> _transformStash;
         private Stash<DestroyComponent> _destroyStash;
         private Stash<DelayComponent> _delayStash;
-        private Stash<GridComponent> _gridStash;
+        private Stash<GridTag> _gridStash;
         private Stash<NormalizeComponent> _normalizeStash;
         
         private readonly Dictionary<Vector2Int, Entity> _grid = new ();
         private readonly HashSet<Entity> _candidates = new ();
         
         private const int MIN_MERGE_COUNT = 3;
+        
+        private readonly float _destroyAnimationTime;
 
         public MergeElementSystem(IStaticDataService staticDataService)
         {
-            _config = staticDataService.GetElementConfig();
+            _destroyAnimationTime = staticDataService.GetElementConfig().DestroyAnimationTime;
         }
         
         public World World { get; set; }
@@ -53,7 +54,7 @@ namespace SwipeElements.Game.ECS.Systems
                 .Build();
             
             _elementFilter = World.Filter
-                .With<ElementComponent>()
+                .With<ElementTag>()
                 .With<TransformComponent>()
                 .With<IdComponent>()
                 .Without<MoveComponent>()
@@ -62,7 +63,7 @@ namespace SwipeElements.Game.ECS.Systems
                 .Build();
             
             _gridFilter = World.Filter
-                .With<GridComponent>()
+                .With<GridTag>()
                 .Build();
             
             _moveFilter = World.Filter
@@ -72,11 +73,11 @@ namespace SwipeElements.Game.ECS.Systems
             
             _mergeStash = World.GetStash<MergeComponent>();
             _idStash = World.GetStash<IdComponent>();
-            _elementStash = World.GetStash<ElementComponent>();
+            _elementStash = World.GetStash<ElementTag>();
             _transformStash = World.GetStash<TransformComponent>();
             _destroyStash = World.GetStash<DestroyComponent>();
             _delayStash = World.GetStash<DelayComponent>();
-            _gridStash = World.GetStash<GridComponent>();
+            _gridStash = World.GetStash<GridTag>();
             _normalizeStash = World.GetStash<NormalizeComponent>();
         }
         
@@ -113,7 +114,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
             foreach (Entity entity in _elementFilter)
             {
-                ref ElementComponent element = ref _elementStash.Get(entity);
+                ref ElementTag element = ref _elementStash.Get(entity);
                 
                 Vector2Int pos = element.view.Position;
                 
@@ -218,7 +219,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
             Entity entity = _gridFilter.First();
             
-            ref GridComponent grid = ref _gridStash.Get(entity);
+            ref GridTag grid = ref _gridStash.Get(entity);
             
             return grid.view;
         }
@@ -230,12 +231,12 @@ namespace SwipeElements.Game.ECS.Systems
             foreach (Entity entity in _candidates)
             {
                 ref TransformComponent transform = ref _transformStash.Get(entity);
-                ref ElementComponent element = ref _elementStash.Get(entity);
+                ref ElementTag element = ref _elementStash.Get(entity);
                 
                 _destroyStash.AddOrGet(entity).gameObject = transform.transform.gameObject;
-                _delayStash.AddOrGet(entity).value = _config.DestroyAnimationTime;
+                _delayStash.AddOrGet(entity).time = _destroyAnimationTime;
                 
-                element.view.StartDestroyAnimation(_config.DestroyAnimationTime);
+                element.view.StartDestroyAnimation(_destroyAnimationTime);
                 
                 columns.Add(element.view.Position.x);
             }

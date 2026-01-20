@@ -2,6 +2,7 @@
 using System.Linq;
 using Sirenix.OdinInspector;
 using SwipeElements.Game.ECS.Providers;
+using SwipeElements.Game.Extensions;
 using UnityEngine;
 
 namespace SwipeElements.Game.Views
@@ -17,13 +18,11 @@ namespace SwipeElements.Game.Views
         [Button]
         private void ActualizeElementsPosition()
         {
-            Vector3 origin = Grid.GetOrigin();
-            
             for (int x = 0; x < Grid.Size.x; x++)
             {
                 for (int y = 0; y < Grid.Size.y; y++)
                 {
-                    Vector3 center = Grid.GetCenter(origin, x, y);
+                    Vector3 center = Grid.GetCenter(x, y);
 
                     foreach (ElementProvider element in Elements)
                     {

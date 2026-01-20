@@ -1,4 +1,5 @@
 ﻿using SwipeElements.Game.ECS.Providers;
+using SwipeElements.Game.Extensions;
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Factories.AirBallonFactory;
 using SwipeElements.Infrastructure.Factories.ElementFactory;
@@ -110,24 +111,23 @@ namespace SwipeElements.Infrastructure.Factories.LevelFactory
             GridConfig gridConfig = _staticDataService.GetGridConfig();
             GridView grid = level.Grid;
             
-            grid.SetGridSize(_data.grid.gridSize);
-            
             float screenHeight = camera.orthographicSize * 2f;
             float screenWidth = screenHeight * camera.aspect;
 
             float availableWidth = screenWidth * (1f - gridConfig.ScreenPadding * 2f);
             float availableHeight = screenHeight * (1f - gridConfig.ScreenPadding * 2f);
 
-            float maxSizeByWidth = availableWidth / grid.Size.x;
-            float maxSizeByHeight = availableHeight / grid.Size.y;
-
-            grid.CellSize = Mathf.Min(maxSizeByWidth, maxSizeByHeight);
+            float maxSizeByWidth = availableWidth / _data.grid.gridSize.x;
+            float maxSizeByHeight = availableHeight / _data.grid.gridSize.y;
+            
+            float cellSize = Mathf.Min(maxSizeByWidth, maxSizeByHeight);
+            
+            grid.Init(_data.grid.gridSize, cellSize);
         }
         
         private void CreateElements(LevelView level)
         {
             GridView grid = level.Grid;
-            Vector3 origin = grid.GetOrigin();
 
             foreach (ElementData elementData in _data.elements)
             {
@@ -136,7 +136,7 @@ namespace SwipeElements.Infrastructure.Factories.LevelFactory
                     element.GetData().view.SetPosition(elementData.position);
                     
                     element.transform.localScale = Vector3.one * grid.CellSize;
-                    element.transform.position = grid.GetCenter(origin, elementData.position.x, elementData.position.y);
+                    element.transform.position = grid.GetCenter(elementData.position.x, elementData.position.y);
                     
                     level.Elements.Add(element);
                 }

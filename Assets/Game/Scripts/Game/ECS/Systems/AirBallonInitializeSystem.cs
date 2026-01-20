@@ -1,7 +1,9 @@
 ﻿using Scellecs.Morpeh;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Infrastructure.Services.StaticDataService;
 using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
+using SwipeElements.Utils;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
@@ -12,16 +14,22 @@ namespace SwipeElements.Game.ECS.Systems
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public sealed class AirBallonInitializeSystem : ISystem
     {
-        private readonly AirBalloonConfig _config;
-        
         private Filter _airBallonFilter;
         private Stash<SpeedComponent> _speedStash;
         private Stash<SineMovementComponent> _sineMovementStash;
         private Stash<CleanupComponent> _cleanupStash;
+        
+        private readonly MinMaxFloat _minMaxSpeed;
+        private readonly MinMaxFloat _minMaxAmplitude;
+        private readonly MinMaxFloat _minMaxFrequency;
 
         public AirBallonInitializeSystem(IStaticDataService staticDataService)
         {
-            _config = staticDataService.GetAirBallonConfig();
+            AirBalloonConfig config = staticDataService.GetAirBallonConfig();
+            
+            _minMaxSpeed = config.MinMaxSpeed;
+            _minMaxAmplitude = config.MinMaxAmplitude;
+            _minMaxFrequency = config.MinMaxFrequency;
         }
 
         public World World { get; set; }
@@ -44,11 +52,11 @@ namespace SwipeElements.Game.ECS.Systems
             foreach (Entity entity in _airBallonFilter)
             {
                 ref SpeedComponent speedComponent = ref _speedStash.Add(entity);
-                speedComponent.speed = Random.Range(_config.MinMaxSpeed.Min, _config.MinMaxSpeed.Max);
+                speedComponent.speed = Random.Range(_minMaxSpeed.Min, _minMaxSpeed.Max);
 
                 ref SineMovementComponent sinusoidComponent = ref _sineMovementStash.Add(entity);
-                sinusoidComponent.amplitude = Random.Range(_config.MinMaxAmplitude.Min, _config.MinMaxAmplitude.Max);
-                sinusoidComponent.frequency = Random.Range(_config.MinMaxFrequency.Min, _config.MinMaxFrequency.Max);
+                sinusoidComponent.amplitude = Random.Range(_minMaxAmplitude.Min, _minMaxAmplitude.Max);
+                sinusoidComponent.frequency = Random.Range(_minMaxFrequency.Min, _minMaxFrequency.Max);
 
                 _cleanupStash.Add(entity);
             }

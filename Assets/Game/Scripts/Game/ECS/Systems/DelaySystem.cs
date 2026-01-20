@@ -26,9 +26,9 @@ namespace SwipeElements.Game.ECS.Systems
             {
                 ref DelayComponent delay = ref _delayStash.Get(entity);
                 
-                delay.value -= deltaTime;
+                delay.time -= deltaTime;
                 
-                if (delay.value < 0f)
+                if (delay.time < 0f)
                 {
                     _delayStash.Remove(entity);
                 }

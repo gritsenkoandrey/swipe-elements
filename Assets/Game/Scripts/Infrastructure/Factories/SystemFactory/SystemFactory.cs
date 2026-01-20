@@ -46,7 +46,7 @@ namespace SwipeElements.Infrastructure.Factories.SystemFactory
             _systemsGroup.AddInitializer(new ElementInitializeSystem(_staticDataService));
             
             _systemsGroup.AddSystem(new DelaySystem());
-            _systemsGroup.AddSystem(new InputSystem(_physicsService, _cameraService));
+            _systemsGroup.AddSystem(new InputSystem(_physicsService, _cameraService, _staticDataService));
             _systemsGroup.AddSystem(new SwipeElementSystem(_staticDataService));
             _systemsGroup.AddSystem(new MoveElementSystem());
             _systemsGroup.AddSystem(new NormalizeElementSystem(_staticDataService));

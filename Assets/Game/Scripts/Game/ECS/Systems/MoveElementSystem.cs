@@ -1,6 +1,7 @@
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Helpers;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ namespace SwipeElements.Game.ECS.Systems
         public void OnAwake()
         {
             _filter = World.Filter
-                .With<ElementComponent>()
+                .With<ElementTag>()
                 .With<MoveComponent>()
                 .With<SpeedComponent>()
                 .With<TransformComponent>()

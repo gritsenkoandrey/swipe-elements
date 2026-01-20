@@ -3,6 +3,7 @@ using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Providers;
 using SwipeElements.Infrastructure.Services.CameraService;
 using SwipeElements.Infrastructure.Services.PhysicsService;
+using SwipeElements.Infrastructure.Services.StaticDataService;
 using SwipeElements.Utils;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
@@ -25,10 +26,13 @@ namespace SwipeElements.Game.ECS.Systems
         private Stash<MergeComponent> _mergeStash;
         private Stash<NormalizeComponent> _normalizeStash;
         
-        public InputSystem(IPhysicsService physicsService, ICameraService cameraService)
+        private readonly float _swipeThresholdSqr;
+        
+        public InputSystem(IPhysicsService physicsService, ICameraService cameraService, IStaticDataService staticDataService)
         {
             _physicsService = physicsService;
             _cameraService = cameraService;
+            _swipeThresholdSqr = Mathf.Pow(staticDataService.GetInputConfig().SwipeThreshold, 2);
         }
 
         public World World { get; set; }
@@ -95,10 +99,13 @@ namespace SwipeElements.Game.ECS.Systems
                     select.end = position;
                 
                     Vector3 direction = select.end - select.start;
+
+                    if (direction.sqrMagnitude > _swipeThresholdSqr)
+                    {
+                        ref SwipeComponent swipe = ref _swipeStash.Add(entity);
                 
-                    ref SwipeComponent swipe = ref _swipeStash.Add(entity);
-                
-                    swipe.direction = new (direction.x, direction.y);
+                        swipe.direction = new (direction.x, direction.y);
+                    }
                 }
                 
                 _selectStash.Remove(entity);

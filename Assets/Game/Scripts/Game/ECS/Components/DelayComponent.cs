@@ -10,6 +10,6 @@ namespace SwipeElements.Game.ECS.Components
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public struct DelayComponent : IComponent
     {
-        public float value;
+        public float time;
     }
 }

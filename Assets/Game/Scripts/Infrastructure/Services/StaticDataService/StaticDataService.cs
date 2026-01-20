@@ -14,6 +14,7 @@ namespace SwipeElements.Infrastructure.Services.StaticDataService
         private AirBalloonConfig _airBalloonConfig;
         private ElementConfig _elementConfig;
         private GridConfig _gridConfig;
+        private InputConfig _inputConfig;
 
         public StaticDataService(IAssetService assetService)
         {
@@ -27,6 +28,7 @@ namespace SwipeElements.Infrastructure.Services.StaticDataService
             _airBalloonConfig = _assetService.LoadFromResources<AirBalloonConfig>(AssetAddress.AIR_BALLON_DATA_PATH);
             _elementConfig = _assetService.LoadFromResources<ElementConfig>(AssetAddress.ELEMENT_DATA_PATH);
             _gridConfig = _assetService.LoadFromResources<GridConfig>(AssetAddress.GRID_DATA_PATH);
+            _inputConfig = _assetService.LoadFromResources<InputConfig>(AssetAddress.INPUT_DATA_PATH);
         }
         
         ScreenConfig IStaticDataService.GetScreenConfig() => _screenConfig;
@@ -38,5 +40,7 @@ namespace SwipeElements.Infrastructure.Services.StaticDataService
         ElementConfig IStaticDataService.GetElementConfig() => _elementConfig;
         
         GridConfig IStaticDataService.GetGridConfig() => _gridConfig;
+        
+        InputConfig IStaticDataService.GetInputConfig() => _inputConfig;
     }
 }

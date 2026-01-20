@@ -1,5 +1,6 @@
 ﻿using Scellecs.Morpeh.Providers;
 using SwipeElements.Game.ECS.Components;
+using SwipeElements.Game.ECS.Tags;
 using Unity.IL2CPP.CompilerServices;
 
 namespace SwipeElements.Game.ECS.Providers
