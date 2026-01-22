@@ -22,7 +22,6 @@ namespace SwipeElements.Infrastructure.Factories.LevelFactory
         private readonly IAirBallonFactory _airBallonFactory;
         
         private readonly LevelView _level;
-        
         private JsonData _data;
         
         public LevelBuilder
@@ -34,15 +33,15 @@ namespace SwipeElements.Infrastructure.Factories.LevelFactory
             IElementFactory elementFactory, 
             IAirBallonFactory airBallonFactory)
         {
+            _level = level;
             _staticDataService = staticDataService;
             _cameraService = cameraService;
             _progressService = progressService;
             _elementFactory = elementFactory;
             _airBallonFactory = airBallonFactory;
-            _level = level;
         }
         
-        public LevelView BuildLevel()
+        public LevelView Build()
         {
             SerializeLevel();
             FitBackground(_level);

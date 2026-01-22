@@ -17,11 +17,22 @@ namespace SwipeElements.Infrastructure.Serialize.Settings
             writer.WriteEndObject();
         }
         
-        public override Vector2Int ReadJson(JsonReader reader, Type objectType, 
-            Vector2Int existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Vector2Int ReadJson
+        (
+            JsonReader reader, 
+            Type objectType, 
+            Vector2Int existingValue, 
+            bool hasExistingValue, 
+            JsonSerializer serializer
+        )
         {
             JObject obj = JObject.Load(reader);
-            return new (obj["x"]?.Value<int>() ?? 0, obj["y"]?.Value<int>() ?? 0);
+            
+            return new 
+            (
+                obj["x"]?.Value<int>() ?? 0, 
+                obj["y"]?.Value<int>() ?? 0
+            );
         }
     }
 }

@@ -37,12 +37,12 @@ namespace SwipeElements.Infrastructure.Serialize
                 data.elements.Add(elementData);
             }
             
-            return JsonConvert.SerializeObject(data, JsonSettings.SettingsWithoutReferenceLoopHandling);;
+            return JsonConvert.SerializeObject(data, JsonSettings.Settings);;
         }
 
         public static JsonData Deserialize(string text)
         {
-            return JsonConvert.DeserializeObject<JsonData>(text, JsonSettings.SettingsWithoutReferenceLoopHandling);
+            return JsonConvert.DeserializeObject<JsonData>(text, JsonSettings.Settings);
         }
     }
 }

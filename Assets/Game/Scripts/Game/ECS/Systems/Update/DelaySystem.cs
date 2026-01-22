@@ -2,7 +2,7 @@ using Scellecs.Morpeh;
 using SwipeElements.Game.ECS.Components;
 using Unity.IL2CPP.CompilerServices;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Update
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]

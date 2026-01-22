@@ -13,6 +13,6 @@ namespace SwipeElements.Game.ECS.Components
     {
         public GameObject gameObject;
 
-        public void Dispose() => UnityEngine.Object.Destroy(gameObject);
+        void IDisposable.Dispose() => UnityEngine.Object.Destroy(gameObject);
     }
 }

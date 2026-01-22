@@ -4,7 +4,7 @@ using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Infrastructure.Services.ResultGameService;
 using Unity.IL2CPP.CompilerServices;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Update
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]

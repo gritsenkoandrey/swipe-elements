@@ -1,4 +1,5 @@
-﻿using Scellecs.Morpeh;
+﻿using System.Runtime.CompilerServices;
+using Scellecs.Morpeh;
 using Scellecs.Morpeh.Helpers;
 using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Tags;
@@ -8,7 +9,7 @@ using SwipeElements.Infrastructure.Services.StaticDataService;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Update
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -99,6 +100,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Vector2Int GetAxis(Vector2 direction)
         {
             if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
@@ -109,6 +111,7 @@ namespace SwipeElements.Game.ECS.Systems
             return direction.y > 0 ? Vector2Int.up : Vector2Int.down;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private GridView GetGridView()
         {
             Entity entity = _gridFilter.First();
@@ -118,6 +121,7 @@ namespace SwipeElements.Game.ECS.Systems
             return grid.view;
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryGetElementAt(Vector2Int position, out Entity result)
         {
             foreach (Entity entity in _elementFilter)

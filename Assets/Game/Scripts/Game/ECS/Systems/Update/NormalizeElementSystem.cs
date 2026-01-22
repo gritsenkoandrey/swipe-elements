@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Collections;
 using Scellecs.Morpeh.Helpers;
@@ -7,10 +8,9 @@ using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Game.Extensions;
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Services.StaticDataService;
-using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
 using Unity.IL2CPP.CompilerServices;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Update
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -116,6 +116,12 @@ namespace SwipeElements.Game.ECS.Systems
             _sortBuffer.Clear();
         }
         
+        public void Dispose()
+        {
+            _sortBuffer.Clear();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private GridView GetGridView()
         {
             Entity entity = _gridFilter.First();
@@ -125,6 +131,9 @@ namespace SwipeElements.Game.ECS.Systems
             return grid.view;
         }
         
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        [Il2CppSetOption(Option.DivideByZeroChecks, false)]
         private struct SortableEntity : IComparable<SortableEntity>
         {
             public Entity entity;
@@ -142,11 +151,6 @@ namespace SwipeElements.Game.ECS.Systems
                 
                 return y - other.y;
             }
-        }
-        
-        public void Dispose()
-        {
-            _sortBuffer.Clear();
         }
     }
 }

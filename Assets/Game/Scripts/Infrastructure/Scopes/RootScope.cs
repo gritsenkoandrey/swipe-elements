@@ -68,8 +68,8 @@ namespace SwipeElements.Infrastructure.Scopes
             builder.Register<IStaticDataService, StaticDataService>(Lifetime.Singleton);
             builder.Register<IPhysicsService, PhysicsService>(Lifetime.Singleton);
             builder.Register<IResultGameService, ResultGameService>(Lifetime.Singleton);
-            builder.Register<IStateMachineFactory, StateMachineFactory>(Lifetime.Singleton);
             builder.Register<IApplicationService, ApplicationService>(Lifetime.Singleton);
+            builder.Register<IStateMachineFactory, StateMachineFactory>(Lifetime.Singleton);
         }
     }
 }

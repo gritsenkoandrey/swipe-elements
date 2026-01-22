@@ -6,12 +6,11 @@ using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Services.StaticDataService;
-using SwipeElements.Infrastructure.Services.StaticDataService.StaticData;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Update
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -110,6 +109,7 @@ namespace SwipeElements.Game.ECS.Systems
             _grid.Clear();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void GenerateMap()
         {
             foreach (Entity entity in _elementFilter)
@@ -122,6 +122,7 @@ namespace SwipeElements.Game.ECS.Systems
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void HorizontalScan(Vector2Int size)
         {
             for (int y = 0; y < size.y; y++)
@@ -160,6 +161,7 @@ namespace SwipeElements.Game.ECS.Systems
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void VerticalScan(Vector2Int size)
         {
             for (int x = 0; x < size.x; x++)
@@ -215,6 +217,7 @@ namespace SwipeElements.Game.ECS.Systems
             return _idStash.Get(a).id == _idStash.Get(b).id;
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private GridView GetGridView()
         {
             Entity entity = _gridFilter.First();
@@ -224,6 +227,7 @@ namespace SwipeElements.Game.ECS.Systems
             return grid.view;
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DestroyElements(Vector2Int size)
         {
             HashSet<int> columns = HashSetPool<int>.Get();
@@ -236,7 +240,7 @@ namespace SwipeElements.Game.ECS.Systems
                 _destroyStash.AddOrGet(entity).gameObject = transform.transform.gameObject;
                 _delayStash.AddOrGet(entity).time = _destroyAnimationTime;
                 
-                element.view.StartDestroyAnimation(_destroyAnimationTime);
+                element.view.Animator.StartDestroyAnimation(_destroyAnimationTime);
                 
                 columns.Add(element.view.Position.x);
             }
@@ -246,6 +250,7 @@ namespace SwipeElements.Game.ECS.Systems
             HashSetPool<int>.Release(columns);
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetNormalize(HashSet<int> columns, Vector2Int size)
         {
             foreach (int x in columns)

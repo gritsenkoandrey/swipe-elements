@@ -42,7 +42,7 @@ namespace SwipeElements.Infrastructure.Factories.LevelFactory
         {
             LevelView level = _objectResolver.Instantiate(_staticDataService.GetLevelConfig().BaseLevel, null);
             LevelBuilder builder = new (level, _staticDataService, _cameraService, _progressService, _elementFactory, _airBallonFactory);
-            return builder.BuildLevel();
+            return builder.Build();
         }
     }
 }

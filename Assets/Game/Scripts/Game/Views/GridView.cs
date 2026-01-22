@@ -1,4 +1,5 @@
-﻿using SwipeElements.Game.Extensions;
+﻿using System.Runtime.CompilerServices;
+using SwipeElements.Game.Extensions;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace SwipeElements.Game.Views
         public float CellSize { get; private set; } = 2f;
         public Vector2 Origin { get; private set; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Init(Vector2Int size, float cellSize)
         {
             Size = size;

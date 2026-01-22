@@ -25,10 +25,7 @@ namespace SwipeElements.Infrastructure.Services.ProgressService
 
         protected abstract void Save();
 
-        public void Dispose()
-        {
-            Changed = null;
-        }
+        public void Dispose() => Changed = null;
 
         public static implicit operator T(PrefsData<T> data) => data.Value;
     }

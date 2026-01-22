@@ -4,7 +4,7 @@ using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Infrastructure.Services.StaticDataService;
 using Unity.IL2CPP.CompilerServices;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Initialize
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -14,7 +14,6 @@ namespace SwipeElements.Game.ECS.Systems
         private Filter _elementFilter;
         private Stash<IdComponent> _idStash;
         private Stash<ElementTag> _elementStash;
-        private Stash<CleanupComponent> _cleanupStash;
         
         private readonly float _idleAnimationTime;
 
@@ -33,7 +32,6 @@ namespace SwipeElements.Game.ECS.Systems
             
             _idStash = World.GetStash<IdComponent>();
             _elementStash = World.GetStash<ElementTag>();
-            _cleanupStash = World.GetStash<CleanupComponent>();
             
             foreach (Entity entity in _elementFilter)
             {
@@ -41,9 +39,7 @@ namespace SwipeElements.Game.ECS.Systems
                 ref IdComponent id = ref _idStash.Add(entity);
 
                 id.id = element.view.Id.GetHashCode();
-                element.view.StartIdleAnimation(_idleAnimationTime);
-
-                _cleanupStash.Add(entity);
+                element.view.Animator.StartIdleAnimation(_idleAnimationTime);
             }
         }
         

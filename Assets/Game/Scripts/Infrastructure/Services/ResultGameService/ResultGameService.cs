@@ -8,6 +8,6 @@ namespace SwipeElements.Infrastructure.Services.ResultGameService
     {
         public event Action<bool> OnResultGame = delegate { };
         
-        void IResultGameService.SendResultGame(bool isWin) => OnResultGame(isWin);
+        void IResultGameService.SendResultGame(bool isWin) => OnResultGame.Invoke(isWin);
     }
 }

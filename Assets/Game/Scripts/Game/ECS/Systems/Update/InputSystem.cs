@@ -1,4 +1,5 @@
-﻿using Scellecs.Morpeh;
+﻿using System.Runtime.CompilerServices;
+using Scellecs.Morpeh;
 using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Providers;
 using SwipeElements.Infrastructure.Services.CameraService;
@@ -8,7 +9,7 @@ using SwipeElements.Utils;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Update
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -68,6 +69,7 @@ namespace SwipeElements.Game.ECS.Systems
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnStartClick(Vector3 position)
         {
             Ray ray = _cameraService.MainCamera.ScreenPointToRay(position);
@@ -88,6 +90,7 @@ namespace SwipeElements.Game.ECS.Systems
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnEndClick(Vector3 position)
         {
             foreach (Entity entity in _selectFilter)
@@ -112,6 +115,7 @@ namespace SwipeElements.Game.ECS.Systems
             }
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool EntityIsActualize(ElementProvider element)
         {
             return _destroyStash.Has(element.Entity) || 

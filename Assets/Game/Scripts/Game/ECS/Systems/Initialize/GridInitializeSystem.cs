@@ -3,7 +3,7 @@ using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Tags;
 using Unity.IL2CPP.CompilerServices;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Initialize
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -11,7 +11,6 @@ namespace SwipeElements.Game.ECS.Systems
     public sealed class GridInitializeSystem : IInitializer
     {
         private Filter _gridFilter;
-        private Stash<CleanupComponent> _cleanupStash;
         private Stash<NormalizeComponent> _normalizeStash;
         private Stash<MergeComponent> _mergeStash;
         
@@ -23,13 +22,11 @@ namespace SwipeElements.Game.ECS.Systems
                 .With<GridTag>()
                 .Build();
             
-            _cleanupStash = World.GetStash<CleanupComponent>();
             _normalizeStash = World.GetStash<NormalizeComponent>();
             _mergeStash = World.GetStash<MergeComponent>();
             
             foreach (Entity entity in _gridFilter)
             {
-                _cleanupStash.Add(entity);
                 _normalizeStash.Add(entity);
                 _mergeStash.Add(entity);
             }

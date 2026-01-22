@@ -4,7 +4,7 @@ using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Tags;
 using Unity.IL2CPP.CompilerServices;
 
-namespace SwipeElements.Game.ECS.Systems
+namespace SwipeElements.Game.ECS.Systems.Cleanup
 {
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -13,7 +13,6 @@ namespace SwipeElements.Game.ECS.Systems
     {
         private Filter _destroyFilter;
         private Filter _gridFilter;
-        private Stash<DestroyComponent> _destroyStash;
         private Stash<WinComponent> _winStash;
         
         public World World { get; set; }
@@ -30,7 +29,8 @@ namespace SwipeElements.Game.ECS.Systems
                 .With<GridTag>()
                 .Build();
             
-            _destroyStash = World.GetStash<DestroyComponent>();
+            World.GetStash<DestroyComponent>().AsDisposable();
+            
             _winStash = World.GetStash<WinComponent>();
         }
         
@@ -43,8 +43,6 @@ namespace SwipeElements.Game.ECS.Systems
             
             foreach (Entity entity in _destroyFilter)
             {
-                ref DestroyComponent destroy = ref _destroyStash.Get(entity);
-                destroy.Dispose();
                 World.RemoveEntity(entity);
             }
 

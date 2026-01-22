@@ -7,7 +7,6 @@ using SwipeElements.Infrastructure.Services.ProgressService;
 using SwipeElements.Infrastructure.Services.ResultGameService;
 using SwipeElements.UI;
 using SwipeElements.UI.Screens;
-using UnityEngine;
 using VContainer;
 
 namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
@@ -107,8 +106,6 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
         private void OnExitGame()
         {
             _progressService.LevelJson.Value = _levelView.Serialize();
-            
-            Debug.Log("Save Game");
         }
     }
 }
