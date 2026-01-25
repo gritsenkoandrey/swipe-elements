@@ -1,4 +1,5 @@
-﻿using SwipeElements.Infrastructure.Factories.AirBallonFactory;
+﻿using SwipeElements.Infrastructure.Builders;
+using SwipeElements.Infrastructure.Factories.AirBallonFactory;
 using SwipeElements.Infrastructure.Factories.ElementFactory;
 using SwipeElements.Infrastructure.Factories.LevelFactory;
 using SwipeElements.Infrastructure.Factories.SystemFactory;
@@ -7,6 +8,8 @@ using SwipeElements.Infrastructure.Services.AssetService;
 using SwipeElements.Infrastructure.Services.CameraService;
 using SwipeElements.Infrastructure.Services.CoroutineService;
 using SwipeElements.Infrastructure.Services.ExitApplicationService;
+using SwipeElements.Infrastructure.Services.GridService;
+using SwipeElements.Infrastructure.Services.LevelDataProvider;
 using SwipeElements.Infrastructure.Services.LoadingScreenService;
 using SwipeElements.Infrastructure.Services.PhysicsService;
 using SwipeElements.Infrastructure.Services.ProgressService;
@@ -69,6 +72,9 @@ namespace SwipeElements.Infrastructure.Scopes
             builder.Register<IPhysicsService, PhysicsService>(Lifetime.Singleton);
             builder.Register<IResultGameService, ResultGameService>(Lifetime.Singleton);
             builder.Register<IApplicationService, ApplicationService>(Lifetime.Singleton);
+            builder.Register<ILevelDataProvider, LevelDataProvider>(Lifetime.Singleton);
+            builder.Register<IGridService, GridService>(Lifetime.Singleton);
+            builder.Register<ILevelBuilder, LevelBuilder>(Lifetime.Singleton);
             builder.Register<IStateMachineFactory, StateMachineFactory>(Lifetime.Singleton);
         }
     }

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using SwipeElements.Infrastructure.Factories.ElementFactory;
 using SwipeElements.Infrastructure.Factories.SystemFactory;
 using SwipeElements.Infrastructure.Services.ApplicationService;
@@ -41,6 +42,8 @@ namespace SwipeElements.Infrastructure.StateMachines.GameStateMachine.States
 
         void IEnterState.Enter()
         {
+            DOTween.Init();
+            
             _staticDataService.Init();
             _progressService.Init();
             _elementFactory.Init();

@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Helpers;
-using SwipeElements.Game.ECS.Systems;
 using SwipeElements.Game.ECS.Systems.Cleanup;
 using SwipeElements.Game.ECS.Systems.Initialize;
 using SwipeElements.Game.ECS.Systems.Update;

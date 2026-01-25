@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using SwipeElements.Game.Views;
-using SwipeElements.Infrastructure.Serialize;
+using SwipeElements.Infrastructure.Services.LevelDataProvider.Extensions;
 using UnityEditor;
 using UnityEngine;
 
-namespace SwipeElements.Game.Scripts.Infrastructure.Serialize.Editor
+namespace SwipeElements.Game.Scripts.Infrastructure.Services.LevelDataProvider.Editor
 {
     public sealed class SerializeTool : EditorWindow
     {

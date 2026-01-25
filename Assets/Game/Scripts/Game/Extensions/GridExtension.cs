@@ -12,5 +12,14 @@ namespace SwipeElements.Game.Extensions
             
             return new (posX, posY, 0f);
         }
+
+        public static Vector2 GetOrigin(this GridView grid)
+        {
+            float totalGridWidth = grid.CellSize * grid.Size.x;
+            float startX = grid.FloorAnchor.position.x - totalGridWidth / 2f;
+            float startY = grid.FloorAnchor.position.y;
+            
+            return new (startX, startY);
+        }
     }
 }

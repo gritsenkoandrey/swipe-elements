@@ -1,7 +1,7 @@
 using SwipeElements.Game.Views;
 using SwipeElements.Infrastructure.Factories.SystemFactory;
-using SwipeElements.Infrastructure.Serialize;
 using SwipeElements.Infrastructure.Services.ExitApplicationService;
+using SwipeElements.Infrastructure.Services.LevelDataProvider.Extensions;
 using SwipeElements.Infrastructure.Services.LoadingScreenService;
 using SwipeElements.Infrastructure.Services.ProgressService;
 using SwipeElements.Infrastructure.Services.ResultGameService;

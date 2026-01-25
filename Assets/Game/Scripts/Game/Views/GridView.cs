@@ -17,34 +17,20 @@ namespace SwipeElements.Game.Views
         {
             Size = size;
             CellSize = cellSize;
-            
-            float totalGridWidth = CellSize * Size.x;
-            float startX = FloorAnchor.position.x - totalGridWidth / 2f;
-            float startY = FloorAnchor.position.y;
-            
-            Origin = new (startX, startY);
+            Origin = this.GetOrigin();
         }
         
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (Application.isPlaying == false)
-            {
-                Init(Size, CellSize);
-            }
-            
             GUIStyle guiStyle = new ()
             {
                 fontSize = 27,
                 alignment = TextAnchor.MiddleCenter,
-                normal =
-                {
-                    textColor = Color.green
-                }
+                normal = { textColor = Color.green }
             };
 
             Gizmos.color = Color.yellow;
-        
             for (int x = 0; x < Size.x; x++)
             {
                 for (int y = 0; y < Size.y; y++)
@@ -56,11 +42,9 @@ namespace SwipeElements.Game.Views
             }
         
             Gizmos.color = Color.red;
-            
             float totalW = Size.x * CellSize;
             float totalH = Size.y * CellSize;
-            Vector3 globalCenter = Origin + new Vector2(totalW / 2f, totalH / 2f);
-            
+            Vector3 globalCenter = this.GetOrigin() + new Vector2(totalW / 2f, totalH / 2f);
             Gizmos.DrawWireCube(globalCenter, new (totalW, totalH, 0f));
         }
 #endif

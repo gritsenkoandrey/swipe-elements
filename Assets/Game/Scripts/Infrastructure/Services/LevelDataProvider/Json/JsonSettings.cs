@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SwipeElements.Infrastructure.Serialize.Settings
+namespace SwipeElements.Infrastructure.Services.LevelDataProvider.Json
 {
     public static class JsonSettings
     {

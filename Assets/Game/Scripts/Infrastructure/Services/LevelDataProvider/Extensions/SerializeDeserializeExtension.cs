@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json;
 using SwipeElements.Game.ECS.Providers;
 using SwipeElements.Game.Views;
-using SwipeElements.Infrastructure.Serialize.Settings;
+using SwipeElements.Infrastructure.Services.LevelDataProvider.Data;
+using SwipeElements.Infrastructure.Services.LevelDataProvider.Json;
 
-namespace SwipeElements.Infrastructure.Serialize
+namespace SwipeElements.Infrastructure.Services.LevelDataProvider.Extensions
 {
-    public static class LevelSerializer
+    public static class SerializeDeserializeExtension
     {
         public static string Serialize(this LevelView level)
         {
-            JsonData data = new ()
+            LevelData data = new ()
             {
                 grid = new ()
                 {
@@ -40,9 +41,9 @@ namespace SwipeElements.Infrastructure.Serialize
             return JsonConvert.SerializeObject(data, JsonSettings.Settings);;
         }
 
-        public static JsonData Deserialize(string text)
+        public static LevelData Deserialize(this string text)
         {
-            return JsonConvert.DeserializeObject<JsonData>(text, JsonSettings.Settings);
+            return JsonConvert.DeserializeObject<LevelData>(text, JsonSettings.Settings);
         }
     }
 }

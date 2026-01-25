@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace SwipeElements.Infrastructure.Serialize.Settings
+namespace SwipeElements.Infrastructure.Services.LevelDataProvider.Json
 {
     public sealed class Vector2IntConverter : JsonConverter<Vector2Int>
     {
