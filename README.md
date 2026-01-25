@@ -15,5 +15,5 @@
 #### 6. Restart State - перезагрузка уровня и очистка ресурсов
 # Tools & Level Generation
 #### Уровни хранятся и загружаются в Json формате, для генерации JSON уровней можно воспользоваться утилитой Tools/Serialize Level
-# 🎥 Gameplay Demo
+# Gameplay Demo
 [![Watch the game in action](https://img.youtube.com/vi/HKHciPglNAE/hqdefault.jpg)](https://youtube.com/shorts/HKHciPglNAE)
