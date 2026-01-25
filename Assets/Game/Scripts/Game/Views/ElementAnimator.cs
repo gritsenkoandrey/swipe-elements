@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using DG.Tweening;
+using LitMotion;
 using UnityEngine;
 
 namespace SwipeElements.Game.Views
@@ -7,62 +7,64 @@ namespace SwipeElements.Game.Views
     public sealed class ElementAnimator : MonoBehaviour
     {
         [field:SerializeField] public SpriteRenderer Renderer { get; private set; }
+        
         [SerializeField] private Sprite[] _idleSprites;
         [SerializeField] private Sprite[] _destroySprites;
 
-        private Tween _tween;
-        private int _index;
+        private MotionHandle _handle;
+        private int _startFrame;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartIdleAnimation(float duration)
         {
-            TryKillTween();
+            TryCancelHandle();
             
-            float time = duration / _destroySprites.Length;
-
-            _index = Random.Range(0, _idleSprites.Length);
-            _tween = DOVirtual.DelayedCall(time, UpdateIdleAnimation)
-                .SetLoops(-1)
-                .SetLink(gameObject, LinkBehaviour.KillOnDisable);
+            _startFrame = Random.Range(0, _idleSprites.Length);
+            _handle = LMotion.Create(0f, _idleSprites.Length, duration)
+                .WithEase(Ease.Linear)
+                .WithLoops(-1)
+                .Bind(UpdateIdleAnimation)
+                .AddTo(this, LinkBehavior.CancelOnDisable);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartDestroyAnimation(float duration)
         {
-            TryKillTween();
+            TryCancelHandle();
             
-            float time = duration / _destroySprites.Length;
-
-            _index = -1;
-            _tween = DOVirtual.DelayedCall(time, UpdateDestroyAnimation)
-                .SetLoops(_destroySprites.Length)
-                .SetLink(gameObject, LinkBehaviour.KillOnDisable);
+            _handle = LMotion.Create(0f, _destroySprites.Length, duration)
+                .WithEase(Ease.Linear)
+                .Bind(UpdateDestroyAnimation)
+                .AddTo(this, LinkBehavior.CancelOnDisable);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UpdateIdleAnimation()
+        private void UpdateIdleAnimation(float value)
         {
-            _index = (_index + 1) % _idleSprites.Length;
-            Renderer.sprite = _idleSprites[_index];
+            int frame = (int)(value + _startFrame) % _idleSprites.Length;
+            
+            Renderer.sprite = _idleSprites[frame];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UpdateDestroyAnimation()
+        private void UpdateDestroyAnimation(float value)
         {
-            _index++;
-            
-            if (_index < _destroySprites.Length)
+            int frame = (int)value;
+                    
+            if (frame >= _destroySprites.Length)
             {
-                Renderer.sprite = _destroySprites[_index];
+                frame = _destroySprites.Length - 1;
             }
+                    
+            Renderer.sprite = _destroySprites[frame];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void TryKillTween()
+        private void TryCancelHandle()
         {
-            if (_tween is {active: true})
+            if (_handle.IsActive())
             {
-                _tween.Kill();
+                _handle.Cancel();
             }
         }
     }

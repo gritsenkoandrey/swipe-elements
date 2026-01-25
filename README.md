@@ -1,19 +1,24 @@
-# Swipe Elements Game
-#### Мобильная match3 игра, построенная на архитектуре (ECS + DI).
+# Swipe Elements Game:
+#### Mobile match-3 game built on (ECS + DI) architecture.
 # Dependencies:
-#### *Unity 6000.0.58f2 URP* | *[Morpeh ECS](https://github.com/scellecs/morpeh)* | *[VContainer](https://vcontainer.hadashikick.jp/)* | *DOTween* | *Newtonsoft.Json*
-# Getting Started
-#### 1. Git clone <https://github.com/gritsenkoandrey/swipe-elements>.
-#### 2. Откройте сцену по пути *Assets/Scenes/Bootstrap.unity*.
-#### 3. Запустите игру в редакторе.
-# Game State Machine
-#### 1. Bootstrap State - инициализация
-#### 2. Preparer State - инициализация сервисов
-#### 3. Level Loading State - загрузка игровой сцены
-#### 4. Game State - состояние игрового цикла
-#### 5. Result State - состояние победы или проигрыша на уровне
-#### 6. Restart State - перезагрузка уровня и очистка ресурсов
-# Tools & Level Generation
-#### Уровни хранятся и загружаются в Json формате, для генерации JSON уровней можно воспользоваться утилитой Tools/Serialize Level
-# Gameplay Demo
+#### *Unity 6000.0.58f2 URP*.
+#### *[Morpeh ECS](https://github.com/scellecs/morpeh)* - ECS Framework.
+#### *[Tri Inspector](https://github.com/codewriter-packages/Tri-Inspector)* - Inspector for Morpeh.
+#### *[VContainer](https://github.com/hadashiA/VContainer)* - DI Framework.
+#### *[Lit Motion](https://github.com/annulusgames/LitMotion)* - Fast and Zero Allocation Tween Library for Unity.
+#### *[Newtonsoft Json](https://github.com/applejag/Newtonsoft.Json-for-Unity)* - Newtonsoft Json For Unity.
+# Getting Started:
+#### 1. Git Clone <https://github.com/gritsenkoandrey/swipe-elements>.
+#### 2. Open the scene at *Assets/Scenes/Bootstrap.unity*.
+#### 3. Run the game in the editor.
+# Game State Machine:
+#### 1. Bootstrap State - initialization.
+#### 2. Preparer State - services initialization.
+#### 3. Level Loading State - game scene loading.
+#### 4. Game State - game loop state.
+#### 5. Result State - level win or loss state.
+#### 6. Restart State - level reload and resource cleanup.
+# Tools & Level Generation:
+#### Levels are stored and loaded in JSON format. To generate JSON levels, you can use the Tools/Game/Level Tool.
+# Gameplay Demo:
 [![Watch the game in action](https://img.youtube.com/vi/HKHciPglNAE/hqdefault.jpg)](https://youtube.com/shorts/HKHciPglNAE)

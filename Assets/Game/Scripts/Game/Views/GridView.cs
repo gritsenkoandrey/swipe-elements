@@ -23,6 +23,11 @@ namespace SwipeElements.Game.Views
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
+            if (Application.isPlaying == false)
+            {
+                Init(Size, CellSize);
+            }
+            
             GUIStyle guiStyle = new ()
             {
                 fontSize = 27,
@@ -44,7 +49,7 @@ namespace SwipeElements.Game.Views
             Gizmos.color = Color.red;
             float totalW = Size.x * CellSize;
             float totalH = Size.y * CellSize;
-            Vector3 globalCenter = this.GetOrigin() + new Vector2(totalW / 2f, totalH / 2f);
+            Vector3 globalCenter = Origin + new Vector2(totalW / 2f, totalH / 2f);
             Gizmos.DrawWireCube(globalCenter, new (totalW, totalH, 0f));
         }
 #endif
