@@ -8,10 +8,7 @@ namespace SwipeElements.Game.ECS.Components
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
-    public struct SineComponent : IComponent
+    public struct InitializeComponent : IComponent
     {
-        public float amplitude;
-        public float frequency;
-        public float direction;
     }
 }

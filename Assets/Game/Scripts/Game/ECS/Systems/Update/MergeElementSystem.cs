@@ -32,9 +32,6 @@ namespace SwipeElements.Game.ECS.Systems.Update
         private Stash<GridTag> _gridStash;
         private Stash<NormalizeComponent> _normalizeStash;
         
-        private readonly Dictionary<Vector2Int, Entity> _grid = new ();
-        private readonly HashSet<Entity> _candidates = new ();
-        
         private const int MIN_MERGE_COUNT = 3;
         
         private readonly float _destroyAnimationTime;
@@ -92,25 +89,29 @@ namespace SwipeElements.Game.ECS.Systems.Update
                 _mergeStash.Remove(entity);
             }
             
-            _grid.Clear();
-            _candidates.Clear();
+            Dictionary<Vector2Int, Entity> grid = DictionaryPool<Vector2Int, Entity>.Get();
+            HashSet<Entity> candidates = HashSetPool<Entity>.Get();
+            HashSet<int> columns = HashSetPool<int>.Get();
             
             Vector2Int size = GetGridView().Size;
             
-            GenerateMap();
-            HorizontalScan(size);
-            VerticalScan(size);
-            DestroyElements(size);
+            GenerateMap(grid);
+            HorizontalScan(size, candidates, grid);
+            VerticalScan(size, candidates, grid);
+            DestroyMark(candidates, columns);
+            NormalizeMark(columns, size, grid);
+            
+            DictionaryPool<Vector2Int, Entity>.Release(grid);
+            HashSetPool<Entity>.Release(candidates);
+            HashSetPool<int>.Release(columns);
         }
         
         public void Dispose()
         {
-            _candidates.Clear();
-            _grid.Clear();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void GenerateMap()
+        private void GenerateMap(Dictionary<Vector2Int, Entity> grid)
         {
             foreach (Entity entity in _elementFilter)
             {
@@ -118,32 +119,32 @@ namespace SwipeElements.Game.ECS.Systems.Update
                 
                 Vector2Int pos = element.view.Position;
                 
-                _grid[pos] = entity;
+                grid[pos] = entity;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void HorizontalScan(Vector2Int size)
+        private void HorizontalScan(Vector2Int size, HashSet<Entity> candidates, Dictionary<Vector2Int, Entity> grid)
         {
             for (int y = 0; y < size.y; y++)
             {
                 for (int x = 0; x < size.x; x++)
                 {
-                    Entity current = GetEntityAt(x, y);
+                    Entity current = GetEntityAt(x, y, grid);
                     
                     if (current == default)
                     {
                         continue;
                     }
         
-                    if (IsSameId(current, GetEntityAt(x - 1, y)))
+                    if (IsSameId(current, GetEntityAt(x - 1, y, grid)))
                     {
                         continue;
                     }
             
                     int count = 1;
                     
-                    while (IsSameId(current, GetEntityAt(x + count, y)))
+                    while (IsSameId(current, GetEntityAt(x + count, y, grid)))
                     {
                         count++;
                     }
@@ -152,7 +153,7 @@ namespace SwipeElements.Game.ECS.Systems.Update
                     {
                         for (int i = 0; i < count; i++)
                         {
-                            _candidates.Add(GetEntityAt(x + i, y));
+                            candidates.Add(GetEntityAt(x + i, y, grid));
                         }
                     }
                     
@@ -162,27 +163,27 @@ namespace SwipeElements.Game.ECS.Systems.Update
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void VerticalScan(Vector2Int size)
+        private void VerticalScan(Vector2Int size, HashSet<Entity> candidates, Dictionary<Vector2Int, Entity> grid)
         {
             for (int x = 0; x < size.x; x++)
             {
                 for (int y = 0; y < size.y; y++)
                 {
-                    Entity current = GetEntityAt(x, y);
+                    Entity current = GetEntityAt(x, y, grid);
                     
                     if (current == default)
                     {
                         continue;
                     }
         
-                    if (IsSameId(current, GetEntityAt(x, y - 1)))
+                    if (IsSameId(current, GetEntityAt(x, y - 1, grid)))
                     {
                         continue;
                     }
             
                     int count = 1;
                     
-                    while (IsSameId(current, GetEntityAt(x, y + count)))
+                    while (IsSameId(current, GetEntityAt(x, y + count, grid)))
                     {
                         count++;
                     }
@@ -191,7 +192,7 @@ namespace SwipeElements.Game.ECS.Systems.Update
                     {
                         for (int i = 0; i < count; i++)
                         {
-                            _candidates.Add(GetEntityAt(x, y + i));
+                            candidates.Add(GetEntityAt(x, y + i, grid));
                         }
                     }
                     
@@ -201,9 +202,9 @@ namespace SwipeElements.Game.ECS.Systems.Update
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Entity GetEntityAt(int x, int y)
+        private Entity GetEntityAt(int x, int y, Dictionary<Vector2Int, Entity> grid)
         {
-            return _grid.GetValueOrDefault(new (x, y));
+            return grid.GetValueOrDefault(new (x, y));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -228,11 +229,9 @@ namespace SwipeElements.Game.ECS.Systems.Update
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DestroyElements(Vector2Int size)
+        private void DestroyMark(HashSet<Entity> candidates, HashSet<int> columns)
         {
-            HashSet<int> columns = HashSetPool<int>.Get();
-            
-            foreach (Entity entity in _candidates)
+            foreach (Entity entity in candidates)
             {
                 ref TransformComponent transform = ref _transformStash.Get(entity);
                 ref ElementTag element = ref _elementStash.Get(entity);
@@ -244,20 +243,16 @@ namespace SwipeElements.Game.ECS.Systems.Update
                 
                 columns.Add(element.view.Position.x);
             }
-            
-            SetNormalize(columns, size);
-            
-            HashSetPool<int>.Release(columns);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetNormalize(HashSet<int> columns, Vector2Int size)
+        private void NormalizeMark(HashSet<int> columns, Vector2Int size, Dictionary<Vector2Int, Entity> grid)
         {
             foreach (int x in columns)
             {
                 for (int y = 0; y < size.y; y++)
                 {
-                    Entity entity = GetEntityAt(x, y);
+                    Entity entity = GetEntityAt(x, y, grid);
         
                     if (entity == default || _destroyStash.Has(entity))
                     {

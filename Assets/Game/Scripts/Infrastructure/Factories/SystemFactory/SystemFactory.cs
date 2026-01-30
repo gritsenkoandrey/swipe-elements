@@ -44,9 +44,9 @@ namespace SwipeElements.Infrastructure.Factories.SystemFactory
         void ISystemFactory.CreateGameSystems()
         {
             _systemsGroup = _world.CreateSystemsGroup();
-            _systemsGroup.AddInitializer(new GridInitializeSystem());
-            _systemsGroup.AddInitializer(new ElementInitializeSystem(_staticDataService));
-            _systemsGroup.AddInitializer(new AirBallonInitializeSystem(_staticDataService));
+            _systemsGroup.AddSystem(new GridInitializeSystem());
+            _systemsGroup.AddSystem(new ElementInitializeSystem(_staticDataService));
+            _systemsGroup.AddSystem(new AirBallonInitializeSystem(_staticDataService));
             _systemsGroup.AddSystem(new DelaySystem());
             _systemsGroup.AddSystem(new InputSystem(_physicsService, _cameraService, _staticDataService));
             _systemsGroup.AddSystem(new SwipeElementSystem(_staticDataService));

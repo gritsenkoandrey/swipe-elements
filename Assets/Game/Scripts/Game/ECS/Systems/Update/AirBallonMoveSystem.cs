@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Scellecs.Morpeh;
+﻿using Scellecs.Morpeh;
 using SwipeElements.Game.ECS.Components;
 using SwipeElements.Game.ECS.Tags;
 using SwipeElements.Infrastructure.Services.CameraService;
@@ -13,21 +12,20 @@ namespace SwipeElements.Game.ECS.Systems.Update
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public sealed class AirBallonMoveSystem : ISystem
     {
-        private readonly ICameraService _cameraService;
-        
         private Filter _airBallonFilter;
         private Stash<SpeedComponent> _speedStash;
         private Stash<TransformComponent> _transformStash;
         private Stash<SineComponent> _sineStash;
         
-        private float _rightX;
-        private float _leftX;
-        
-        private const float OFFSET = 1f;
+        private readonly float _rightX;
+        private readonly float _leftX;
         
         public AirBallonMoveSystem(ICameraService cameraService)
         {
-            _cameraService = cameraService;
+            (float right, float left) = cameraService.CalculateHorizontalScreenBounds();
+            
+            _leftX = left;
+            _rightX = right;
         }
 
         public World World { get; set; }
@@ -44,8 +42,6 @@ namespace SwipeElements.Game.ECS.Systems.Update
             _speedStash = World.GetStash<SpeedComponent>();
             _transformStash = World.GetStash<TransformComponent>();
             _sineStash = World.GetStash<SineComponent>();
-            
-            CalculateScreenBounds();
         }
         
         public void OnUpdate(float deltaTime)
@@ -58,10 +54,8 @@ namespace SwipeElements.Game.ECS.Systems.Update
                 
                 Vector3 position = transformComponent.transform.position;
                 
-                float direction = (entity.Id % 2 == 0) ? 1f : -1f;
-                position.x += direction * speedComponent.speed * deltaTime;
-                position.y += Mathf.Cos(Time.time * sineComponent.frequency + entity.Id) * 
-                              sineComponent.amplitude * deltaTime;
+                position.x += sineComponent.direction * speedComponent.speed * deltaTime;
+                position.y += Mathf.Cos(Time.time * sineComponent.frequency + entity.Id) * sineComponent.amplitude * deltaTime;
                 
                 if (position.x > _rightX)
                 {
@@ -78,17 +72,6 @@ namespace SwipeElements.Game.ECS.Systems.Update
         
         public void Dispose()
         {
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CalculateScreenBounds()
-        {
-            Camera camera = _cameraService.MainCamera;
-            float screenHeight = 2f * camera.orthographicSize;
-            float screenWidth = screenHeight * camera.aspect;
-            
-            _rightX = camera.transform.position.x + screenWidth / 2f + OFFSET;
-            _leftX = camera.transform.position.x - screenWidth / 2f - OFFSET;
         }
     }
 }

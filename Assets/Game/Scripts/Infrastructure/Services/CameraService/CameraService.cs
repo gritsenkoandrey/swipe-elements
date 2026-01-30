@@ -7,6 +7,8 @@ namespace SwipeElements.Infrastructure.Services.CameraService
         [SerializeField] private Camera _mainCamera;
 
         Camera ICameraService.MainCamera => _mainCamera;
+        
+        private const float OFFSET = 1f;
 
         void ICameraService.AdaptiveCamera(Bounds bounds)
         {
@@ -34,6 +36,17 @@ namespace SwipeElements.Infrastructure.Services.CameraService
             newPosition.x = bounds.center.x;
             
             _mainCamera.transform.position = newPosition;
+        }
+
+        (float right, float left) ICameraService.CalculateHorizontalScreenBounds()
+        {
+            float screenHeight = 2f * _mainCamera.orthographicSize;
+            float screenWidth = screenHeight * _mainCamera.aspect;
+            
+            float right = _mainCamera.transform.position.x + screenWidth / 2f + OFFSET;
+            float left = _mainCamera.transform.position.x - screenWidth / 2f - OFFSET;
+
+            return (right, left);
         }
     }
 }
